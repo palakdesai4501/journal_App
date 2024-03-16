@@ -33,10 +33,10 @@ public class JournalEntryControllerv2 {
 	}
 	
 	@PostMapping
-	public boolean createEntry(@RequestBody JournalEntry myEntry) {
+	public JournalEntry createEntry(@RequestBody JournalEntry myEntry) {
 		myEntry.setDate(LocalDateTime.now());
 		journalEntryService.saveEntry(myEntry);
-		return true;
+		return myEntry;
 	}
 	
 	@GetMapping("id/{myId}")
@@ -51,7 +51,13 @@ public class JournalEntryControllerv2 {
 	}
 	
 	@PutMapping("/id/{id}")
-	public JournalEntry updateJournalById(@PathVariable ObjectId id, @RequestBody JournalEntry myEntry){
-		return null;
+	public JournalEntry updateJournalById(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry){
+		JournalEntry old = journalEntryService.findById(id).orElse(null);
+		if(old != null) {
+			old.setTitle(newEntry.getTitle()!=null && newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
+			old.setContent(newEntry.getContent() != null && newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+		}
+		journalEntryService.saveEntry(old);
+		return old;
 	}
 }
