@@ -41,7 +41,7 @@ public class JournalEntryControllerv2 {
 	
 	@GetMapping("id/{myId}")
 	public JournalEntry getJournalEntryById(@PathVariable ObjectId myId) {
-		return null;
+		return journalEntryService.findById(myId).orElse(null);
 	}
 	
 	@DeleteMapping("id/{myId}")
