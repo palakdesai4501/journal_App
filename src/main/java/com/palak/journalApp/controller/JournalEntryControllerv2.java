@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,13 +66,15 @@ public class JournalEntryControllerv2 {
 	}
 	
 	@PutMapping("/id/{id}")
-	public JournalEntry updateJournalById(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry){
+	public ResponseEntity<?> updateJournalById(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry){
 		JournalEntry old = journalEntryService.findById(id).orElse(null);
 		if(old != null) {
 			old.setTitle(newEntry.getTitle()!=null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
 			old.setContent(newEntry.getContent() != null && !newEntry.equals("") ? newEntry.getContent() : old.getContent());
+			journalEntryService.saveEntry(old);
+			return new ResponseEntity<>(old, HttpStatus.OK);
 		}
-		journalEntryService.saveEntry(old);
-		return old;
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
 	}
 }
