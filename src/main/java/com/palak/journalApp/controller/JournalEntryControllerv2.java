@@ -36,11 +36,18 @@ public class JournalEntryControllerv2 {
 	}
 	
 	@PostMapping
-	public JournalEntry createEntry(@RequestBody JournalEntry myEntry) {
-		myEntry.setDate(LocalDateTime.now());
-		journalEntryService.saveEntry(myEntry);
-		return myEntry;
+	public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry myEntry) {
+		try {
+			myEntry.setDate(LocalDateTime.now());
+			journalEntryService.saveEntry(myEntry);
+			return new ResponseEntity<>(myEntry, HttpStatus.CREATED);
+			
+		}catch(Exception e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
+		
+	
 	
 	@GetMapping("id/{myId}")
 	public ResponseEntity<JournalEntry> getJournalEntryById(@PathVariable ObjectId myId) {
